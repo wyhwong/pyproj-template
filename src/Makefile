@@ -80,7 +80,6 @@ test:
 # Run static code analysis
 static-code-analysis:
 	@echo "Running static code analysis..."
-	mkdir -p ${TEST_REPORT_DIR}
 	poetry install
 	poetry run black ${SRC_DIR} --check
 	poetry run bandit -r ${SRC_DIR} -c pyproject.toml
@@ -88,6 +87,14 @@ static-code-analysis:
 	poetry run isort ${SRC_DIR} --check-only
 	poetry run mypy ${SRC_DIR} --show-error-codes
 	poetry run radon cc ${SRC_DIR}
+	mkdir -p ${TEST_REPORT_DIR}
+	poetry run pytest \
+		--disable-warnings \
+		--cov=${SRC_DIR} .
+	rmdir ${TEST_REPORT_DIR}
+
+test-report:
+	mkdir -p ${TEST_REPORT_DIR}
 	poetry run pytest \
 		--disable-warnings \
 		--cov-report=html:${TEST_REPORT_DIR} \
