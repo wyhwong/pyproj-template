@@ -1,20 +1,23 @@
 export DOCKER_BUILDKIT=1
 
 # Load environment variables (for app)
-include .app-env
+export ENV_FILE?=.app-env
+include ${ENV_FILE}
 
 # For Docker image
 export VERSION?=0.1.0
 export USERNAME?=$(shell whoami)
 export USER_ID?=$(shell id -u)
 export GROUP_ID?=$(shell id -g)
-export APP_DIR?=./app
-export INFRA_DIR?=./infrastructure
-export UML_DIR?=./uml-diagram
-export DOCKERFILE?=./deployment/Dockerfile
+
+export APP_DIR?=app
+export INFRA_DIR?=infrastructure
+export UML_DIR?=uml-diagram
+export DOCKERFILE?=deployment/Dockerfile
 
 # Static code analysis / test
-export TEST_REPORT_DIR?=./test_report
+export TEST_DIR?=tests
+export TEST_REPORT_DIR?=test_report
 
 build:
 	@echo "Building Docker image (MAIN)..."
@@ -40,10 +43,7 @@ build:
 run:
 	@echo "Running Docker container..."
 	docker run --rm -it -d --name ${USERNAME}-${APP_DIR} \
-		-e TZ=${TZ} \
-		-e STREAMING_LOG_LEVEL=${STREAMING_LOG_LEVEL} \
-		-e FILE_LOG_LEVEL=${FILE_LOG_LEVEL} \
-		-e LOG_FILEPATH=${LOG_FILEPATH} \
+		--env-file ${ENV_FILE} \
 		${USERNAME}/${APP_DIR}:${VERSION}
 
 clean:
@@ -66,8 +66,8 @@ format:
 	@echo "Formatting source code..."
 	poetry run black ${APP_DIR}
 	poetry run isort ${APP_DIR}
-	poetry run black tests
-	poetry run isort tests
+	poetry run black ${TEST_DIR}
+	poetry run isort ${TEST_DIR}
 
 test:
 	@echo "Running tests..."
@@ -79,7 +79,6 @@ test:
 # Run static code analysis
 static-code-analysis:
 	@echo "Running static code analysis..."
-	poetry install
 	poetry run black ${APP_DIR} --check
 	poetry run bandit -r ${APP_DIR} -c pyproject.toml
 	poetry run pylint ${APP_DIR} --rcfile ../.pylintrc
@@ -93,6 +92,7 @@ static-code-analysis:
 	rmdir ${TEST_REPORT_DIR}
 
 test-report:
+	@echo "Generating test report..."
 	mkdir -p ${TEST_REPORT_DIR}
 	poetry run pytest \
 		--disable-warnings \
@@ -116,17 +116,17 @@ infra-down:
 	docker-compose -f ${INFRA_DIR}/docker-compose.yml down
 
 # Generate UML diagram
-uml-diagram:
+uml:
 	@echo "Generating UML diagram..."
 	mkdir -p ${UML_DIR}
-	poetry run pyreverse ${APP_DIR} -o png -d ${UML_DIR}
+	poetry run pyreverse ${APP_DIR} -o png -d ${UML_DIR} --verbose
 
 # Show environment variables
 app-info:
 	@echo "Showing environment variables (used in the project)..."
 	@while read -r line; do \
 		echo $$line; \
-	done < .app-env
+	done < ${ENV_FILE}
 
 
 help:
