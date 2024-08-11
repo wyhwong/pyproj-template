@@ -39,13 +39,6 @@ COPY ./app /home/${USERNAME}/app
 # [Optional] Setup test environment
 FROM main AS test
 
-# Install dev dependencies and copy test cases into the image
-# NOTE: Here we created a file /.dockertest for the test cases to
-#       be able to recognize the infrastructure correctly.
-USER root
-RUN touch /.dockertest
-
-USER ${USERNAME}
 COPY --from=base /requirements-dev.txt /tmp/requirements-dev.txt
 RUN python3 -m pip install --no-cache-dir -r /tmp/requirements-dev.txt
 COPY ./tests/ /home/${USERNAME}/tests/
