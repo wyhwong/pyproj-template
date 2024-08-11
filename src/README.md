@@ -48,6 +48,9 @@ Tools used in development:
 - pre-commit: [https://pre-commit.com/](https://pre-commit.com/)
 
 ```bash
+# Show make help
+make help
+
 # Run test cases
 make test
 
@@ -62,6 +65,12 @@ make format
 
 # Update dependencies
 make update
+
+# Generate UML diagram
+make uml-diagram
+
+# Show environment information used in this project
+make app-info
 ```
 
 ## Run in Docker Environment
