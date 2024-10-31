@@ -54,20 +54,8 @@ make help
 # Run test cases
 make test
 
-# Run static code analysis
-make static-code-analysis
-
-# Run test report
-make test-report
-
-# Format code with black, isort
-make format
-
 # Update dependencies
 make update
-
-# Generate UML diagram
-make uml-diagram
 
 # Show environment information used in this project
 make app-info
