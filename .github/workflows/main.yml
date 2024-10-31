@@ -32,4 +32,4 @@ jobs:
       - name: Pre-commit run
         working-directory: ./src
         run: |
-          pre-commit run -vvv
+          poetry run pre-commit run -vvv
