@@ -61,44 +61,13 @@ update:
 	@echo "Updating Python dependencies..."
 	poetry update
 
-# Format analyticks using black, isort
-format:
-	@echo "Formatting source code..."
-	poetry run black ${APP_DIR}
-	poetry run isort ${APP_DIR}
-	poetry run black ${TEST_DIR}
-	poetry run isort ${TEST_DIR}
-
 test:
 	@echo "Running tests..."
-	poetry run pytest \
-		--disable-warnings \
-		--cov-report=html:${TEST_REPORT_DIR} \
-		--cov=${APP_DIR} .
-
-# Run static code analysis
-static-code-analysis:
-	@echo "Running static code analysis..."
-	poetry run black ${APP_DIR} --check
-	poetry run bandit -r ${APP_DIR} -c pyproject.toml
-	poetry run pylint ${APP_DIR} --rcfile ../.pylintrc
-	poetry run isort ${APP_DIR} --check-only
-	poetry run mypy ${APP_DIR} --show-error-codes
-	poetry run radon cc ${APP_DIR}
-	mkdir -p ${TEST_REPORT_DIR}
-	poetry run pytest \
-		--disable-warnings \
-		--cov=${APP_DIR} .
-	rmdir ${TEST_REPORT_DIR}
-
-test-report:
-	@echo "Generating test report..."
 	mkdir -p ${TEST_REPORT_DIR}
 	poetry run pytest \
 		--disable-warnings \
 		--cov-report=html:${TEST_REPORT_DIR} \
 		--cov=${APP_DIR} .
-	open ${TEST_REPORT_DIR}/index.html
 
 # Build/Pull infrastructure services
 infra-build:
@@ -114,12 +83,6 @@ infra-up:
 infra-down:
 	@echo "Stopping infrastructure services..."
 	docker-compose -f ${INFRA_DIR}/docker-compose.yml down
-
-# Generate UML diagram
-uml:
-	@echo "Generating UML diagram..."
-	mkdir -p ${UML_DIR}
-	poetry run pyreverse ${APP_DIR} -o png -d ${UML_DIR} --verbose
 
 # Show environment variables
 app-info:
