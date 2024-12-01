@@ -82,6 +82,7 @@ repos:
   hooks:
   - id: mypy
     name: mypy
+    working_dir: src
     entry: mypy src
     args: [
       "--show-error-codes",
