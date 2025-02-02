@@ -16,7 +16,7 @@ classifiers=[
 ]
 
 [tool.poetry.dependencies]
-python = "^3.11,<3.12"
+python = "^3.11"
 tqdm = "^4.66.1"
 cachetools = "^5.3.2"
 tenacity = "^8.2.3"
